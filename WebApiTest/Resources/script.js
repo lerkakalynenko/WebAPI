@@ -4,7 +4,7 @@ function sendCalculateRequest(name1, name2) {
 
     const fullUrl = `${url}?name1=${name1}&name2=${name2}`;
     fetch(fullUrl, {
-            mode: "no-cors",
+            //mode: "no-cors",
             method: "GET"
         }).then(response => response.text())
         .then(txt => {

@@ -12,6 +12,7 @@ namespace WebApiTest
 {
     public class Startup
     {
+        private string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +26,18 @@ namespace WebApiTest
 
             services.AddControllers();
             services.AddSingleton<TextHandler>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:15906",
+                            "https://localhost:44322")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,17 +46,21 @@ namespace WebApiTest
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-              
+
             }
+            app.UseHttpsRedirection();
+
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(env.ContentRootPath, "Resources")),
                 RequestPath = "/Resources"
             });
-            app.UseHttpsRedirection();
+
 
             app.UseRouting();
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
